@@ -145,19 +145,22 @@ void MyServer::sendMessageToUsers(QString message, const QStringList &users, QSt
     out << (quint16)(block.size() - sizeof(quint16));
 
     QDataStream outToSender(&blockToSender, QIODevice::WriteOnly);
-    outToSender << (quint16)0 << Client::comMessageToUsers << users.join(",") << message;
+    outToSender << (quint16)0 << Client::comMessageToUsers << fromUsername << users << message;
     outToSender.device()->seek(0);
     outToSender << (quint16)(blockToSender.size() - sizeof(quint16));
 
-    //успешность передачи
+    //успешность передачи пользователям адресатам и отправителю
     bool success = false;
     for (int j = 0; j < clients.length(); ++j){
-        if (users.contains(clients.at(j)->getName())){
+        if (clients.at(j)->getName() == fromUsername){
+            clients.at(j)->socket->write(blockToSender);
+            success = true;
+        }
+        else if (users.contains(clients.at(j)->getName())){
             clients.at(j)->socket->write(block);
             success = true;
         }
-        else if (clients.at(j)->getName() == fromUsername)
-            clients.at(j)->socket->write(blockToSender);
+
     }
 
     //добавляем сообщение в лог, если отправка успешна
@@ -206,16 +209,19 @@ void MyServer::slotUserDisconnect(Client *client)
     //если клиент авторизован, удаляем его имя из списков, если нет - просто разрываем соединение
     if(client->isAuthed){
         QString name = client->myName;
+        //убираем из вектора
+        clients.remove(clients.indexOf(client));
+        client->deleteLater();
         //сообщаем всем, что клиент вышел
         sendToAllUserLeft(name);
         //убираем из списка
         emit sigRemoveUserFromList(name);
     }
-    //убираем из вектора
-    clients.remove(clients.indexOf(client));
-    client->deleteLater();
-    foreach(Client* cl, clients)
-        qDebug()<< cl;
+    else{
+        //убираем из вектора
+        clients.remove(clients.indexOf(client));
+        client->deleteLater();
+    }
 }
 
 void MyServer::slotMessageFromServer(QString message, const QStringList &users)

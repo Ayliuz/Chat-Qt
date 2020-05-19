@@ -55,7 +55,7 @@
         <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
        <property name="sortingEnabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -177,26 +177,10 @@
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="cbToAll">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>20</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>To ALL</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPlainTextEdit" name="pteAdresses">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>30</horstretch>
+         <horstretch>25</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -212,8 +196,11 @@
          <height>100</height>
         </size>
        </property>
+       <property name="centerOnScroll">
+        <bool>false</bool>
+       </property>
        <property name="placeholderText">
-        <string>Send to All</string>
+        <string>Send to </string>
        </property>
       </widget>
      </item>

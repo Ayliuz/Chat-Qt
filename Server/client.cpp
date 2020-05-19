@@ -22,7 +22,6 @@ Client::Client(int desc, MyServer *serv, QObject *parent) :QObject(parent)
     connect(socket, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(slotError(QAbstractSocket::SocketError)));
 
-    qDebug() << "Client connected" << desc;
 }
 
 Client::~Client()
@@ -38,7 +37,6 @@ void Client::slotConnect()
 
 void Client::slotDisconnect()
 {
-    qDebug() << "Client disconnected";
     emit sigRemoveUser(this);
 }
 
@@ -121,13 +119,10 @@ void Client::slotReadyRead()
         //от текущего пользователя пришло сообщение для некоторых пользователей
         case comMessageToUsers:
         {
-            QString users_in;
-            in >> users_in;
+            QStringList users;
+            in >> users;
             QString message;
             in >> message;
-            //разбиваем строку на имена
-            QStringList users = users_in.split(",");
-            //отправляем нужным
             server->sendMessageToUsers(message, users, myName);
             break;
         }
@@ -145,7 +140,7 @@ void Client::sendCommand(quint8 comm) const
     out.device()->seek(0);
     out << (quint16)(block.size() - sizeof(quint16));
     socket->write(block);
-    qDebug() << "Send to" << myName << "command:" << comm;
+    //qDebug() << "Send to" << myName << "command:" << comm;
 }
 
 void Client::sendUsersOnline() const
